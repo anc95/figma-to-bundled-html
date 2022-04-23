@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["es6"],
+    "outDir": "dist",
+    "baseUrl": "./",
+    "moduleResolution": "Node",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@figma"
+    ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  }
+}
