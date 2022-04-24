@@ -1,9 +1,9 @@
 import { BaseSegment } from '@/types/segment'
 import { createStyleStringFromJSON } from '@/utils/style'
 import { context } from './context'
-import { TextProcessor } from './text'
+import { FrameProcessor, TextProcessor, RectangleProcessor } from './processor'
 
-const generateSegmentTree = (selection: readonly SceneNode[]) => {
+const generateSegmentTree = async (selection: readonly SceneNode[]) => {
   const tree: BaseSegment = {
     tag: 'body',
     className: '',
@@ -11,32 +11,53 @@ const generateSegmentTree = (selection: readonly SceneNode[]) => {
     children: []
   }
 
-  const traverse = () => {
-    const containers = []
+  const traverse = async (containers: any[], figmaChildren: SceneNode[]) => {
+    for (const figmaChild of figmaChildren) {
+      let child: BaseSegment = null
 
-    selection.forEach(selection => {
-      switch (selection.type) {
+      switch (figmaChild.type) {
         case 'TEXT':
-          const textProcessor = new TextProcessor(selection)
-          containers.push(textProcessor.run())
+          const textProcessor = new TextProcessor(figmaChild)
+          child = await textProcessor.run()
+          
+          break
+        case 'FRAME':
+          const frameProcessor = new FrameProcessor(figmaChild)
+          child = await frameProcessor.run()
 
-          break;
+          break
+        case 'RECTANGLE':
+          const rectangleProcessor = new RectangleProcessor(figmaChild)
+          child = await rectangleProcessor.run()
+
+          break
+        default:
+          console.warn(`Unhandled node type: ${figmaChild.type}`, figmaChild)
       }
-    })
 
-    return containers
+      if (child) {
+        containers.push(child)
+        await traverse(child.children, (figmaChild as any).children || [])
+      }
+    }
   }
 
-  tree.children = traverse()
+  await traverse(tree.children, selection as any)
+
+  console.log(tree)
 
   return tree
 }
 
-export const generateHTML = () => {
-  const segmentTree = generateSegmentTree(figma.currentPage.selection)
+export const generateHTML = async () => {
+  const segmentTree = await generateSegmentTree(figma.currentPage.selection)
 
   const traverse = <T extends BaseSegment>(node: T) => {
-    const str = `<${node.tag} className="${node.className || ""}" style="${createStyleStringFromJSON(node.style)}">
+    if (node.tag === 'br') {
+      return '</br>'
+    }
+
+    const str = `<${node.tag} class="${node.className || ""}" style="${createStyleStringFromJSON(node.style)}">
       ${node.children ? node.children.map(child => traverse(child)).join('') : ''}
       ${(node as any).text ? (node as any).text : ''}
     </${node.tag}>

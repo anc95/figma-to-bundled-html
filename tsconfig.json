@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": ["es6"],
+    "lib": ["es6", "DOM", "ScriptHost", "ES2017.TypedArrays", "ESNext"],
     "outDir": "dist",
     "baseUrl": "./",
     "moduleResolution": "Node",

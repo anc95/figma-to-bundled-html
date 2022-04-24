@@ -1,5 +1,5 @@
 import { BaseSegment } from '@/types/segment'
-import { solidPaintToCssColor, calcCssStyleFromStyleId, calcTextCssStyle } from '@/utils/style'
+import { solidPaintToCssColor, calcTextCssStyle } from '@/utils/style'
 import { context } from '@/core/context'
 
 export class TextSegment implements BaseSegment {
@@ -10,7 +10,7 @@ export class TextSegment implements BaseSegment {
   public text: string
 
   constructor() {
-    this.tag = 'p',
+    this.tag = 'div',
     this.style = {
       'display': 'inline-block'
     },
@@ -19,14 +19,14 @@ export class TextSegment implements BaseSegment {
     this.children = []
   }
 
-  fillFigma(figmaSegment: Partial<StyledTextSegment>) {
+  async fillFigma(figmaSegment: Partial<StyledTextSegment>) {
     const {
       characters,
 			fills,
       textStyleId
     } = figmaSegment
 
-    this.text = characters
+    this.text = characters.replace(/\x20+$/g, '&nbsp;')
 
     // TODO: condiser there fills are more than one
     if (fills.length) {
@@ -35,10 +35,10 @@ export class TextSegment implements BaseSegment {
     }
 
     if (textStyleId) {
-      context.classStyleStore.record(textStyleId)
+      await context.classStyleStore.record(textStyleId)
       this.className = context.classStyleStore.getClassName(textStyleId)
-    } else {
-      Object.assign(this.style, calcTextCssStyle(figmaSegment as any))
     }
+
+    Object.assign(this.style, await calcTextCssStyle(figmaSegment as any))
   }
 }

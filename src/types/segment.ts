@@ -1,6 +1,6 @@
 export interface BaseSegment {
-	className: string,
+	className?: string,
   tag: string,
-  style: Record<string, string>,
-  children: BaseSegment[]
+  style?: Record<string, string>,
+  children?: BaseSegment[]
 }

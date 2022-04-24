@@ -13,7 +13,7 @@ if (figma.editorType === 'figma') {
   figma.showUI(__html__);
   
   // figma.currentPage.selection
-  console.log(generateHTML())
+  generateHTML().then(console.log)
 
   // Calls to "parent.postMessage" from within the HTML page will trigger this
   // callback. The callback will be passed the "pluginMessage" property of the
@@ -36,7 +36,7 @@ if (figma.editorType === 'figma') {
 
     // Make sure to close the plugin when you're done. Otherwise the plugin will
     // keep running, which shows the cancel button at the bottom of the screen.
-    figma.closePlugin();
+    // figma.closePlugin();
   };
 
 // If the plugins isn't run in Figma, run this code

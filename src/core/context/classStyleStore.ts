@@ -4,7 +4,7 @@ export const createClassStyleStore = () => {
   const store = new Map<string, Record<string, string>>()
   const idNameMap = new Map<string, string>()
 
-  const record = id => {
+  const record = async id => {
     let { name } = figma.getStyleById(id)
 
     if (!name) {
@@ -14,7 +14,7 @@ export const createClassStyleStore = () => {
     }
 
     if (!store.get(id)) {
-      store.set(id, calcCssStyleFromStyleId(id))
+      store.set(id, await calcCssStyleFromStyleId(id))
       idNameMap.set(id, name)
     }
 

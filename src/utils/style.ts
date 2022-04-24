@@ -1,3 +1,5 @@
+import { base64Image } from "./base64"
+
 export const solidPaintToCssColor = (paint: SolidPaint) => {
   const createColorValue = v => Math.floor(v * 255)
 
@@ -26,7 +28,36 @@ const readPX = (v: number | { value?: number, unit: 'PIXELS' | 'PERCENT' | 'AUTO
   }
 }
 
-export const calcTextCssStyle = (style: TextStyle) => {
+export const processGeometryProperties = async (originNode: SceneNode) => {
+  const {
+    fills
+  } = originNode as GeometryMixin
+
+  const style = {}
+
+  if (Array.isArray(fills)) {
+    const imgFill = (fills as Paint[]).find(fill => fill.type === 'IMAGE');
+
+    if (imgFill) {
+      const imageHash = await originNode.exportAsync()
+      const {
+        width, height
+      } = originNode
+
+      Object.assign(style, {
+        width: `${width}px`,
+        height: `${height}px`,
+        background: `url('${base64Image(imageHash)}')`
+      })
+
+      return style
+    }
+  }
+
+  return style
+}
+
+export const calcTextCssStyle = async (style: TextStyle) => {
   const { 
     fontSize,
     textDecoration,
@@ -50,6 +81,16 @@ export const calcTextCssStyle = (style: TextStyle) => {
     cssStyle['font-family'] = fontName.family
   }
 
+  if (fontName.style) {
+    switch (fontName.style) {
+      case 'SemiBold':
+      case 'Bold':
+        cssStyle['font-weight'] = 600
+      default:
+        console.warn(`Unknown fontName.style ${fontName.style}`)
+    }
+  }
+
   if (letterSpacing) {
     cssStyle['letter-spacing'] = readPX(letterSpacing)
   }
@@ -65,7 +106,7 @@ export const calcTextCssStyle = (style: TextStyle) => {
   return cssStyle
 }
 
-export const calcCssStyleFromStyleId = (styleId: string) => {
+export const calcCssStyleFromStyleId = async (styleId: string) => {
   const style = figma.getStyleById(styleId)
 
   if (style.type === 'TEXT') {
@@ -75,14 +116,15 @@ export const calcCssStyleFromStyleId = (styleId: string) => {
   return {}
 }
 
-export const calcTextContainerCssStyle = (textNode: TextNode) => {
+export const calcTextNodeCssStyle = async (textNode: TextNode) => {
   const style: Record<string, string> = {}
 
   const {
     fills,
     height,
     textAlignHorizontal,
-    textAlignVertical
+    textAlignVertical,
+    fontName
   } = textNode
 
   if (fills && Array.isArray(fills)) {
@@ -128,6 +170,116 @@ export const calcTextContainerCssStyle = (textNode: TextNode) => {
 
       style['vertical-align'] = value
     }
+  }
+console.log(fontName)
+  Object.assign(style, await calcTextCssStyle({fontName} as any))
+
+  console.log(style)
+
+  return style
+}
+
+export const calcFrameCssStyle = async (textNode: FrameNode) => {
+  const {
+    layoutMode,
+    width,
+    height,
+    primaryAxisSizingMode,
+    counterAxisSizingMode,
+    primaryAxisAlignItems,
+    counterAxisAlignItems,
+    paddingLeft,
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    itemSpacing,
+    clipsContent,
+    cornerRadius,
+    layoutAlign,
+    layoutGrow
+  } = textNode
+
+  const style = {}
+
+  if (layoutMode && layoutMode != 'NONE') {
+    style['display'] = 'flex'
+    style['flex-direction'] = layoutMode === 'HORIZONTAL' ? 'row' : 'column'
+    style['flex-wrap'] = 'wrap'
+  }
+
+  if (primaryAxisSizingMode === 'FIXED') {
+    if (layoutMode === 'HORIZONTAL') {
+      style['width'] = `${width}px`
+    } else {
+      style['height'] = `${height}px`
+    }
+  }
+
+  if (counterAxisSizingMode === 'FIXED') {
+    if (layoutMode === 'HORIZONTAL') {
+      style['height'] = `${height}px`
+    } else {
+      style['width'] = `${width}px`    }
+  }
+
+  if (primaryAxisAlignItems) {
+    switch (primaryAxisAlignItems) {
+      case 'MIN':
+        style['justify-content'] = 'flex-start'
+        break
+      case 'MAX':
+        style['justify-content'] = 'flex-end'
+        break
+      case 'CENTER':
+        style['justify-content'] = 'center'
+        break
+      case 'SPACE_BETWEEN':
+        style['justify-content'] = 'space-between'
+        break
+      default:
+        console.warn(`no matched primaryAxisAlignItems: ${primaryAxisAlignItems}`)
+    }
+  }
+
+  if (counterAxisAlignItems) {
+    switch (counterAxisAlignItems) {
+      case 'MIN':
+        style['align-items'] = 'flex-start'
+        break
+      case 'MAX':
+        style['align-items'] = 'flex-end'
+        break
+      case 'CENTER':
+        style['align-items'] = 'center'
+        break
+      default:
+        console.warn(`no matched counterAxisAlignItems: ${counterAxisAlignItems}`)
+    }
+  }
+
+  if (typeof paddingLeft === 'number') {
+    style['box-sizing'] = 'border-box'
+    style['padding'] = `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`
+  }
+
+  if (itemSpacing) {
+    // TODO: need to set style for the children
+  }
+
+  if (typeof cornerRadius === 'number') {
+    style['box-radios'] = `${cornerRadius}px`
+  }
+
+  if (clipsContent) {
+    style['overflow'] = 'hidden'
+  }
+
+  if (layoutAlign === 'STRETCH') {
+    style['align-self'] = 'stretch'
+  }
+
+  if (layoutGrow) {
+    style['flex-grow'] = layoutGrow
   }
 
   return style
