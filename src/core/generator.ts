@@ -1,7 +1,15 @@
 import { BaseSegment } from '@/types/segment'
 import { createStyleStringFromJSON } from '@/utils/style'
 import { context } from './context'
-import { FrameProcessor, TextProcessor, RectangleProcessor } from './processor'
+import { FrameProcessor, TextProcessor, ImageProcessor } from './processor'
+
+const hasTextChildren = (node: SceneNode) => {
+  if (node.type === 'TEXT') {
+    return true;
+  }
+
+  return ((node as any).children || []).some(child => hasTextChildren(child))
+}
 
 const generateSegmentTree = async (selection: readonly SceneNode[]) => {
   const tree: BaseSegment = {
@@ -15,6 +23,13 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
     for (const figmaChild of figmaChildren) {
       let child: BaseSegment = null
 
+      if (!hasTextChildren(figmaChild)) {
+        const rectangleProcessor = new ImageProcessor(figmaChild)
+        child = await rectangleProcessor.run()
+        containers.push(child)
+        continue
+      }
+
       switch (figmaChild.type) {
         case 'TEXT':
           const textProcessor = new TextProcessor(figmaChild)
@@ -26,11 +41,7 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
           child = await frameProcessor.run()
 
           break
-        case 'RECTANGLE':
-          const rectangleProcessor = new RectangleProcessor(figmaChild)
-          child = await rectangleProcessor.run()
 
-          break
         default:
           console.warn(`Unhandled node type: ${figmaChild.type}`, figmaChild)
       }
@@ -57,7 +68,11 @@ export const generateHTML = async () => {
       return '</br>'
     }
 
-    const str = `<${node.tag} class="${node.className || ""}" style="${createStyleStringFromJSON(node.style)}">
+    if ((node as any).content) {
+      return (node as any).content
+    }
+
+    const str = `<${node.tag} ${node.className ? `class=\"${node.className}\"` : ''} style="${createStyleStringFromJSON(node.style)}">
       ${node.children ? node.children.map(child => traverse(child)).join('') : ''}
       ${(node as any).text ? (node as any).text : ''}
     </${node.tag}>

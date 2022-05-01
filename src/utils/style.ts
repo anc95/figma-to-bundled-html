@@ -1,5 +1,3 @@
-import { base64Image } from "./base64"
-
 export const solidPaintToCssColor = (paint: SolidPaint) => {
   const createColorValue = v => Math.floor(v * 255)
 
@@ -28,35 +26,6 @@ const readPX = (v: number | { value?: number, unit: 'PIXELS' | 'PERCENT' | 'AUTO
   }
 }
 
-export const processGeometryProperties = async (originNode: SceneNode) => {
-  const {
-    fills
-  } = originNode as GeometryMixin
-
-  const style = {}
-
-  if (Array.isArray(fills)) {
-    const imgFill = (fills as Paint[]).find(fill => fill.type === 'IMAGE');
-
-    if (imgFill) {
-      const imageHash = await originNode.exportAsync()
-      const {
-        width, height
-      } = originNode
-
-      Object.assign(style, {
-        width: `${width}px`,
-        height: `${height}px`,
-        background: `url('${base64Image(imageHash)}')`
-      })
-
-      return style
-    }
-  }
-
-  return style
-}
-
 export const calcTextCssStyle = async (style: TextStyle) => {
   const { 
     fontSize,
@@ -70,7 +39,7 @@ export const calcTextCssStyle = async (style: TextStyle) => {
   const cssStyle = {}
 
   if (fontSize) {
-    cssStyle['font-size'] = fontSize
+    cssStyle['font-size'] = `${fontSize}px`
   }
 
   if (textDecoration === 'UNDERLINE') {
@@ -131,10 +100,6 @@ export const calcTextNodeCssStyle = async (textNode: TextNode) => {
     const solidPaint = fills.find(fill => fill.type === 'SOLID')
 
     style.color = solidPaintToCssColor(solidPaint)
-  }
-
-  if (height) {
-    style['min-height'] = `${height}px`
   }
 
   if (textAlignHorizontal) {
@@ -205,6 +170,7 @@ export const calcFrameCssStyle = async (textNode: FrameNode) => {
     style['display'] = 'flex'
     style['flex-direction'] = layoutMode === 'HORIZONTAL' ? 'row' : 'column'
     style['flex-wrap'] = 'wrap'
+    style['width'] = '100%'
   }
 
   if (primaryAxisSizingMode === 'FIXED') {
@@ -219,7 +185,8 @@ export const calcFrameCssStyle = async (textNode: FrameNode) => {
     if (layoutMode === 'HORIZONTAL') {
       style['height'] = `${height}px`
     } else {
-      style['width'] = `${width}px`    }
+      style['width'] = `${width}px`    
+    }
   }
 
   if (primaryAxisAlignItems) {
