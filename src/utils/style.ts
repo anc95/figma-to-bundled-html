@@ -136,10 +136,8 @@ export const calcTextNodeCssStyle = async (textNode: TextNode) => {
       style['vertical-align'] = value
     }
   }
-console.log(fontName)
-  Object.assign(style, await calcTextCssStyle({fontName} as any))
 
-  console.log(style)
+  Object.assign(style, await calcTextCssStyle({fontName} as any))
 
   return style
 }

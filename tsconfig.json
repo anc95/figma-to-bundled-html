@@ -5,6 +5,7 @@
     "outDir": "dist",
     "baseUrl": "./",
     "moduleResolution": "Node",
+    "jsx": "react-jsx",
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@figma"

@@ -55,8 +55,6 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
 
   await traverse(tree.children, selection as any)
 
-  console.log(tree)
-
   return tree
 }
 
