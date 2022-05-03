@@ -5,6 +5,7 @@
 import { generateHTML } from "./core/generator";
 import { EventType, getInitialData, sendMessageToUI } from "./utils/event";
 import { findRootNode } from "./utils/root";
+import { createContext, setContext } from '@/core/context'
 
 // Runs this code if the plugin is run in Figma
 if (figma.editorType === 'figma') {
@@ -15,6 +16,8 @@ if (figma.editorType === 'figma') {
   figma.showUI(__html__, {  width: 1000, height: 800 });
 
   const rootNode = findRootNode()
+  
+  setContext(createContext({rootNode}))
   
   // Calls to "parent.postMessage" from within the HTML page will trigger this
   // callback. The callback will be passed the "pluginMessage" property of the
@@ -35,7 +38,9 @@ if (figma.editorType === 'figma') {
           key,
           value
         } = data
-        console.log(key, value)
+
+        console.log(data)
+
         rootNode.setPluginData(key, JSON.stringify(value))
       }
     }

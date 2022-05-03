@@ -1,3 +1,5 @@
+import { useContext } from "@/core/context"
+
 export const solidPaintToCssColor = (paint: SolidPaint) => {
   const createColorValue = v => Math.floor(v * 255)
 
@@ -142,6 +144,21 @@ export const calcTextNodeCssStyle = async (textNode: TextNode) => {
   return style
 }
 
+const calcWidthValue = (w: number) => {
+  const context = useContext();
+  const rootWidth = context.rootNode.width
+
+  if (!rootWidth) {
+    return `${w}px`
+  }
+
+  if (w / rootWidth > 0.8) {
+    return '100%'
+  }
+
+  return `${w}px`
+}
+
 export const calcFrameCssStyle = async (textNode: FrameNode) => {
   const {
     layoutMode,
@@ -173,7 +190,7 @@ export const calcFrameCssStyle = async (textNode: FrameNode) => {
 
   if (primaryAxisSizingMode === 'FIXED') {
     if (layoutMode === 'HORIZONTAL') {
-      style['width'] = `${width}px`
+      style['width'] = calcWidthValue(width)
     } else {
       style['height'] = `${height}px`
     }
@@ -183,7 +200,7 @@ export const calcFrameCssStyle = async (textNode: FrameNode) => {
     if (layoutMode === 'HORIZONTAL') {
       style['height'] = `${height}px`
     } else {
-      style['width'] = `${width}px`    
+      style['width'] = calcWidthValue(width)
     }
   }
 

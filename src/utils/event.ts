@@ -1,3 +1,5 @@
+import { PluginData } from '@/types/config'
+
 export enum EventType {
   HtmlReady,
   UILoaded,
@@ -21,14 +23,14 @@ export const sendMessageToCode = <T>(type: EventType, data?: T) => {
   }, '*')
 }
 
-export enum DataKey {
-  previewConfig = 'preview-config'
-}
-
-export const getInitialData = (rootNode: SceneNode) => {
-  const previewConfig = JSON.parse(rootNode.getPluginData(DataKey.previewConfig) || 'null')
+export const getInitialData = (rootNode: SceneNode): PluginData => {
+  const get = (key, defaultValue = null) => {
+    return JSON.parse(rootNode.getPluginData(key) || JSON.stringify(defaultValue))
+  }
 
   return {
-    previewConfig
+    previewConfig: get('previewConfig'),
+    i18nResource: get('i18nResource'),
+    langs: get('langs')
   }
 }

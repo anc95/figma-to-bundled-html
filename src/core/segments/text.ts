@@ -1,6 +1,6 @@
 import { BaseSegment } from '@/types/segment'
 import { solidPaintToCssColor, calcTextCssStyle } from '@/utils/style'
-import { context } from '@/core/context'
+import { useContext } from '@/core/context'
 
 export class TextSegment implements BaseSegment {
   public children;
@@ -35,8 +35,8 @@ export class TextSegment implements BaseSegment {
     }
 
     if (textStyleId) {
-      await context.classStyleStore.record(textStyleId)
-      this.className = context.classStyleStore.getClassName(textStyleId)
+      await useContext().classStyleStore.record(textStyleId)
+      this.className = useContext().classStyleStore.getClassName(textStyleId)
     }
 
     Object.assign(this.style, await calcTextCssStyle(figmaSegment as any))

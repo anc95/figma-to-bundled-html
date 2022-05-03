@@ -1,6 +1,6 @@
 import { BaseSegment } from '@/types/segment'
 import { createStyleStringFromJSON } from '@/utils/style'
-import { context } from './context'
+import { useContext } from './context'
 import { FrameProcessor, TextProcessor, ImageProcessor } from './processor'
 
 const hasTextChildren = (node: SceneNode) => {
@@ -86,7 +86,7 @@ export const generateHTML = async () => {
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  ${context.classStyleStore.generateStyle()}
+  ${useContext().classStyleStore.generateStyle()}
 </head>
 ${traverse(segmentTree)}
 </html>

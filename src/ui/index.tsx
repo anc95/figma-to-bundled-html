@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import * as ReactDOM from 'react-dom'
 import { Tabs } from 'antd'
-import { Preview, Config } from './component'
+import { Preview, Config, ConfigHandle, I18n } from './component'
 import 'antd/dist/antd.css';
 import './main.css'
-import { EventType, sendMessageToCode, DataKey } from '@/utils/event';
-import { PreviewConfig } from '@/types/config';
+import { EventType, sendMessageToCode } from '@/utils/event';
+import { PluginData, PreviewConfig } from '@/types/config';
+import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
+import { langsAtom } from './state/langs';
 
 const { TabPane } = Tabs;
 
@@ -16,6 +18,10 @@ const App = () => {
     width: 400,
     height: 600
   })
+
+  const updateLangs = useSetRecoilState(langsAtom)
+
+  const configRef = useRef<ConfigHandle>();
 
   useEffect(() => {
     sendMessageToCode(EventType.UILoaded)
@@ -29,8 +35,12 @@ const App = () => {
           break
         }
         case EventType.InitialData: {
-          console.log(data[DataKey.previewConfig])
-          data[DataKey.previewConfig] && setConfig(data[DataKey.previewConfig])
+          const pluginData = data as PluginData
+
+          if (pluginData.previewConfig) {
+            setConfig(pluginData.previewConfig)
+            configRef.current.form.setFieldsValue(pluginData.previewConfig)
+          }
           break
         }
         default:
@@ -41,10 +51,9 @@ const App = () => {
     return () => window.onmessage = null
   }, [setConfig])
 
-
   const handleConfigChange = useCallback((_changedValue, values: PreviewConfig) => {
     setConfig(values)
-    // sendMessageToCode(EventType.SetPluginData, { key: DataKey.previewConfig, value: values })
+    sendMessageToCode(EventType.SetPluginData, { key: 'previewConfig', value: values })
   }, [])
 
   return <div className="flex m-5">
@@ -57,11 +66,14 @@ const App = () => {
           tab='Config'
           key="1"
         >
-          <Config value={config} onChange={handleConfigChange} />
+          <Config ref={configRef} value={config} onChange={handleConfigChange} />
+        </TabPane>
+        <TabPane tab='I18n' key='i18n'>
+          <I18n />
         </TabPane>
       </Tabs>
     </div>
   </div>
 }
 
-ReactDOM.render(<App />, document.getElementById('react-page'))
+ReactDOM.render(<RecoilRoot><App /></RecoilRoot>, document.getElementById('react-page'))
