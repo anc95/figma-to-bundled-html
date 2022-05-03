@@ -62,6 +62,10 @@ const App = () => {
   const handleConfigChange = useCallback((_changedValue, values: PreviewConfig) => {
     setConfig(values)
     sendMessageToCode(EventType.SetPluginData, { key: 'previewConfig', value: values })
+
+    if (_changedValue.lang) {
+      sendMessageToCode(EventType.ChangeLang, _changedValue.lang)
+    }
   }, [])
 
   return <div className="flex m-5">
@@ -71,8 +75,8 @@ const App = () => {
     <div className='basis-2/3 ml-10'>
       <Tabs defaultActiveKey="1">
         <TabPane
-          tab='Config'
-          key="1"
+          tab='Preview Config'
+          key="preview-config"
         >
           <Config ref={configRef} value={config} onChange={handleConfigChange} />
         </TabPane>

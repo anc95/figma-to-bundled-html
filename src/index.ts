@@ -20,6 +20,7 @@ if (figma.editorType === 'figma') {
   setContext(createContext({rootNode}))
   
   const context = useContext()
+  let getHtml = null
   // Calls to "parent.postMessage" from within the HTML page will trigger this
   // callback. The callback will be passed the "pluginMessage" property of the
   // posted message.
@@ -28,11 +29,17 @@ if (figma.editorType === 'figma') {
 
     switch(type) {
       case (EventType.UILoaded): {
-        const html = await generateHTML()
-        sendMessageToUI(EventType.HtmlReady, html)
+        getHtml = await generateHTML()
+        sendMessageToUI(EventType.HtmlReady, getHtml())
         sendMessageToUI(EventType.InitialData, getInitialData(rootNode))
         sendMessageToUI(EventType.TextKeys, [...context.textKeys])
 
+        break
+      }
+      case EventType.ChangeLang: {
+        context.i18n.updateLang(data)
+
+        sendMessageToUI(EventType.HtmlReady, getHtml())
         break
       }
       case (EventType.SetPluginData): {
@@ -41,9 +48,12 @@ if (figma.editorType === 'figma') {
           value
         } = data
 
-        console.log(data)
+        if (key === 'i18nResource') {
+          context.i18n.updateResource(value)
+        }
 
         rootNode.setPluginData(key, JSON.stringify(value))
+        break
       }
     }
   };

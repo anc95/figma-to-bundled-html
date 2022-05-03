@@ -1,21 +1,25 @@
 import { createClassStyleStore } from './classStyleStore'
+import { createI18n } from './i18n'
 
 interface Context {
   classStyleStore: ReturnType<typeof createClassStyleStore>,
   rootNode: SceneNode,
-  textKeys: Set<string>
+  textKeys: Set<string>,
+  i18n: ReturnType<typeof createI18n>
 }
 
 export const createContext = ({
   rootNode
-}: Omit<Context, 'classStyleStore' | 'textKeys'>) => {
+}: Pick<Context, 'rootNode'>) => {
   const classStyleStore = createClassStyleStore()
   const textKeys = new Set<string>()
+  const i18n = createI18n(rootNode)
 
   return {
     rootNode,
     textKeys,
-    classStyleStore
+    classStyleStore,
+    i18n
   }
 }
 

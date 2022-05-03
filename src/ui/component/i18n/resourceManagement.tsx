@@ -20,6 +20,8 @@ export const ResourceManagement = (props: ResourceManagementProps) => {
     onChange
   } = props
 
+  console.log(langs)
+
   const [filter, setFilter] = useState('');
   const filteredKeys = useMemo(() => {
     return textKeys.filter(key => key.includes(filter))
@@ -39,7 +41,7 @@ export const ResourceManagement = (props: ResourceManagementProps) => {
     <Collapse>
     {
       filteredKeys.map(key => {
-        const translatedCount = langs.reduce((res, lang) => {
+        const translatedCount = (langs || []).reduce((res, lang) => {
           return res + ((resource?.[lang]?.[key] || '').trim() ? 1 : 0)
         }, 0)
 

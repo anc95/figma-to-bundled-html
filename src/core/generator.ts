@@ -60,6 +60,15 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
 
 export const generateHTML = async () => {
   const segmentTree = await generateSegmentTree(figma.currentPage.selection)
+  const context = useContext()
+
+  const getText = (text: string | undefined) => {
+    if (!text) {
+      return ''
+    }
+
+    return context.i18n.t(text)
+  }
 
   const traverse = <T extends BaseSegment>(node: T) => {
     if (node.tag === 'br') {
@@ -72,23 +81,24 @@ export const generateHTML = async () => {
 
     const str = `<${node.tag} ${node.className ? `class=\"${node.className}\"` : ''} style="${createStyleStringFromJSON(node.style)}">
       ${node.children ? node.children.map(child => traverse(child)).join('') : ''}
-      ${(node as any).text ? (node as any).text : ''}
+      ${getText((node as any).text)}
     </${node.tag}>
     `.trim()
 
     return str;
   }
 
-  return `<!DOCTYPE html>
+  return () =>
+`<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  ${useContext().classStyleStore.generateStyle()}
-</head>
-${traverse(segmentTree)}
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    ${context.classStyleStore.generateStyle()}
+  </head>
+  ${traverse(segmentTree)}
 </html>
 `
 }

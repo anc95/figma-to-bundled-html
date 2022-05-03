@@ -1,6 +1,8 @@
-import { Form, FormInstance, InputNumber } from 'antd'
+import { Form, FormInstance, InputNumber, Select } from 'antd'
 import { useCallback, useImperativeHandle } from 'react'
 import * as React from 'react'
+import { useRecoilState } from 'recoil'
+import { langsAtom } from '../state/langs'
 
 interface ConfigProps {
   value?: {
@@ -19,6 +21,8 @@ export const Config = React.forwardRef<ConfigHandle, ConfigProps>((props, ref) =
     value = {},
     onChange,
   } = props
+
+  const [langs] = useRecoilState(langsAtom)
   
   useImperativeHandle(ref, () => {
     return {
@@ -47,6 +51,16 @@ export const Config = React.forwardRef<ConfigHandle, ConfigProps>((props, ref) =
     name="height"
     >
       <InputNumber addonAfter='px' />
+    </Form.Item>
+    <Form.Item
+    label="lang"
+    name="lang"
+    >
+      <Select>
+        {
+          langs.map(lang => <Select.Option key={lang} value={lang}>{lang}</Select.Option>)
+        }
+      </Select>
     </Form.Item>
   </Form>
 })

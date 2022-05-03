@@ -5,7 +5,8 @@ export enum EventType {
   UILoaded,
   SetPluginData,
   InitialData,
-  TextKeys
+  TextKeys,
+  ChangeLang
 }
 
 export const sendMessageToUI = <T>(type: EventType, data?: T) => {
