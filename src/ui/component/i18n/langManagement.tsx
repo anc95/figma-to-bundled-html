@@ -29,7 +29,7 @@ export const LangManagement = (props: LangManagementProps) => {
       return
     }
 
-    const newLangs = Array.from(new Set(...langs).add(inputValue))
+    const newLangs = Array.from(new Set(langs).add(inputValue))
 
     if (newLangs.length !== langs.length) {
       handleLangsChange(newLangs)

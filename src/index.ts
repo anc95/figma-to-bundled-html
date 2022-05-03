@@ -5,7 +5,7 @@
 import { generateHTML } from "./core/generator";
 import { EventType, getInitialData, sendMessageToUI } from "./utils/event";
 import { findRootNode } from "./utils/root";
-import { createContext, setContext } from '@/core/context'
+import { createContext, setContext, useContext } from '@/core/context'
 
 // Runs this code if the plugin is run in Figma
 if (figma.editorType === 'figma') {
@@ -19,6 +19,7 @@ if (figma.editorType === 'figma') {
   
   setContext(createContext({rootNode}))
   
+  const context = useContext()
   // Calls to "parent.postMessage" from within the HTML page will trigger this
   // callback. The callback will be passed the "pluginMessage" property of the
   // posted message.
@@ -30,6 +31,7 @@ if (figma.editorType === 'figma') {
         const html = await generateHTML()
         sendMessageToUI(EventType.HtmlReady, html)
         sendMessageToUI(EventType.InitialData, getInitialData(rootNode))
+        sendMessageToUI(EventType.TextKeys, [...context.textKeys])
 
         break
       }

@@ -4,7 +4,8 @@ export enum EventType {
   HtmlReady,
   UILoaded,
   SetPluginData,
-  InitialData
+  InitialData,
+  TextKeys
 }
 
 export const sendMessageToUI = <T>(type: EventType, data?: T) => {
@@ -29,8 +30,8 @@ export const getInitialData = (rootNode: SceneNode): PluginData => {
   }
 
   return {
-    previewConfig: get('previewConfig'),
-    i18nResource: get('i18nResource'),
-    langs: get('langs')
+    previewConfig: get('previewConfig', null),
+    i18nResource: get('i18nResource', {}),
+    langs: get('langs', [])
   }
 }

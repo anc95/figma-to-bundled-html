@@ -6,8 +6,8 @@ import 'antd/dist/antd.css';
 import './main.css'
 import { EventType, sendMessageToCode } from '@/utils/event';
 import { PluginData, PreviewConfig } from '@/types/config';
-import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
-import { langsAtom } from './state/langs';
+import { RecoilRoot, useSetRecoilState } from 'recoil'
+import { langsAtom, resourceAtom, resourceKeysAtom } from './state/langs';
 
 const { TabPane } = Tabs;
 
@@ -20,6 +20,8 @@ const App = () => {
   })
 
   const updateLangs = useSetRecoilState(langsAtom)
+  const updateTextKeys = useSetRecoilState(resourceKeysAtom)
+  const updateResource = useSetRecoilState(resourceAtom)
 
   const configRef = useRef<ConfigHandle>();
 
@@ -40,7 +42,13 @@ const App = () => {
           if (pluginData.previewConfig) {
             setConfig(pluginData.previewConfig)
             configRef.current.form.setFieldsValue(pluginData.previewConfig)
+            updateLangs(pluginData.langs)
+            updateResource(pluginData.i18nResource)
           }
+          break
+        }
+        case EventType.TextKeys: {
+          updateTextKeys(data)
           break
         }
         default:

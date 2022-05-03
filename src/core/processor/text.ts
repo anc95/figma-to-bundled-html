@@ -1,6 +1,7 @@
 import { BaseSegment } from '@/types/segment'
 import { calcTextNodeCssStyle } from '@/utils/style'
 import { TextSegment, BrSegment } from '@/core/segments'
+import { useContext } from '../context'
 
 export class TextProcessor {
 	private textNode: TextNode
@@ -16,6 +17,7 @@ export class TextProcessor {
 		let inOl = false
 		let inLi = false
 		let olContainer: any = []
+		const context = useContext()
 
 		const task = async (list: any[], index: number) => {
 			if (index > originSegments.length - 1) {
@@ -24,7 +26,10 @@ export class TextProcessor {
 
 			const segment = originSegments[index]
 			const textSegment = new TextSegment()
+
 			await textSegment.fillFigma(segment)
+
+			context.textKeys.add(textSegment.text)
 
 			const appendBr = () => {
 				let appended = false;
