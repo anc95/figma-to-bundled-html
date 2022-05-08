@@ -1,11 +1,13 @@
 import { createClassStyleStore } from './classStyleStore'
+import { createCustomScriptStore } from './customScript'
 import { createI18n } from './i18n'
 
 interface Context {
   classStyleStore: ReturnType<typeof createClassStyleStore>,
   rootNode: SceneNode,
   textKeys: Set<string>,
-  i18n: ReturnType<typeof createI18n>
+  i18n: ReturnType<typeof createI18n>,
+  customScript: ReturnType<typeof createCustomScriptStore>
 }
 
 export const createContext = ({
@@ -14,12 +16,14 @@ export const createContext = ({
   const classStyleStore = createClassStyleStore()
   const textKeys = new Set<string>()
   const i18n = createI18n(rootNode)
+  const customScript = createCustomScriptStore(rootNode)
 
   return {
     rootNode,
     textKeys,
     classStyleStore,
-    i18n
+    i18n,
+    customScript
   }
 }
 

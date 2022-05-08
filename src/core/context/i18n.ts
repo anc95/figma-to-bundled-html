@@ -13,7 +13,8 @@ const createI18n = (rootNode: SceneNode) => {
   return {
     updateLang,
     updateResource,
-    t
+    t,
+    getLang: () => lang
   }
 }
 

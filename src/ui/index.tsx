@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as ReactDOM from 'react-dom'
 import { Tabs } from 'antd'
-import { Preview, Config, ConfigHandle, I18n } from './component'
+import { Preview, Config, ConfigHandle, I18n, Script } from './component'
 import 'antd/dist/antd.css';
 import './main.css'
 import { EventType, sendMessageToCode } from '@/utils/event';
 import { PluginData, PreviewConfig } from '@/types/config';
 import { RecoilRoot, useSetRecoilState } from 'recoil'
 import { langsAtom, resourceAtom, resourceKeysAtom } from './state/langs';
+import { CodeOutlined, GlobalOutlined, SettingOutlined } from '@ant-design/icons';
+import { customScriptAtom, htmlAtom, jsonResultAtom } from './state/result';
 
 const { TabPane } = Tabs;
 
@@ -22,6 +24,9 @@ const App = () => {
   const updateLangs = useSetRecoilState(langsAtom)
   const updateTextKeys = useSetRecoilState(resourceKeysAtom)
   const updateResource = useSetRecoilState(resourceAtom)
+  const updateHtml = useSetRecoilState(htmlAtom)
+  const updateJSONResult = useSetRecoilState(jsonResultAtom)
+  const updateCustomScript = useSetRecoilState(customScriptAtom)
 
   const configRef = useRef<ConfigHandle>();
 
@@ -34,6 +39,7 @@ const App = () => {
       switch(type) {
         case EventType.HtmlReady: {
           setHtml(data)
+          updateHtml(data)
           break
         }
         case EventType.InitialData: {
@@ -44,11 +50,16 @@ const App = () => {
             configRef.current.form.setFieldsValue(pluginData.previewConfig)
             updateLangs(pluginData.langs)
             updateResource(pluginData.i18nResource)
+            updateCustomScript(pluginData.customScript || '')
           }
           break
         }
         case EventType.TextKeys: {
           updateTextKeys(data)
+          break
+        }
+        case EventType.JSONResultReady: {
+          updateJSONResult(data)
           break
         }
         default:
@@ -73,15 +84,18 @@ const App = () => {
       <Preview html={html} width={config.width} height={config.height} />
     </div>  
     <div className='basis-2/3 ml-10'>
-      <Tabs defaultActiveKey="1">
+      <Tabs defaultActiveKey="1" onChange={(a) => console.log(a)}>
         <TabPane
-          tab='Preview Config'
+          tab={<SettingOutlined title='Preview Settings' />}
           key="preview-config"
         >
           <Config ref={configRef} value={config} onChange={handleConfigChange} />
         </TabPane>
-        <TabPane tab='I18n' key='i18n'>
+        <TabPane tab={<GlobalOutlined />} key='i18n'>
           <I18n />
+        </TabPane>
+        <TabPane tab={<CodeOutlined />} key='code'>
+          <Script />
         </TabPane>
       </Tabs>
     </div>

@@ -1,6 +1,7 @@
 const HtmlWebpackInlineSourcePlugin = require('html-inline-script-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
+const webpack = require('webpack')
 
 module.exports = (env, argv) => ({
   mode: argv.mode === 'production' ? 'production' : 'development',
@@ -36,7 +37,6 @@ module.exports = (env, argv) => ({
           }
         ] 
       },
-
       // Allows you to use "<%= require('./file.svg') %>" in your HTML code to get a data URI
       { test: /\.(png|jpg|gif|webp|svg)$/, loader: 'url-loader' },
     ],
@@ -53,6 +53,7 @@ module.exports = (env, argv) => ({
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'), // Compile into a folder called "dist"
+    publicPath: '',
   },
 
   // Tells Webpack to generate "ui.html" and to inline "ui.ts" into it
@@ -65,5 +66,8 @@ module.exports = (env, argv) => ({
       inject: 'body'
     }),
     new HtmlWebpackInlineSourcePlugin(),
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
+    }),
   ],
 })

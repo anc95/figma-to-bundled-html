@@ -13,7 +13,7 @@ if (figma.editorType === 'figma') {
   // it will then create that many rectangles on the screen.
 
   // This shows the HTML page in "ui.html".
-  figma.showUI(__html__, {  width: 1000, height: 800 });
+  figma.showUI(__html__, {  width: 1000, height: 800, position: { x: 200, y: 200 } });
 
   const rootNode = findRootNode()
   
@@ -52,9 +52,30 @@ if (figma.editorType === 'figma') {
           context.i18n.updateResource(value)
         }
 
+        if (key === 'customScript') {
+          context.customScript.set(value)
+
+          sendMessageToUI(EventType.HtmlReady, getHtml())
+        }
+
         rootNode.setPluginData(key, JSON.stringify(value))
         break
       }
+      case (EventType.JSONResult): {
+        const currentLang = context.i18n.getLang()
+        const json: Record<string, string> = {}
+
+        data.forEach(lang => {
+          context.i18n.updateLang(lang)
+          json[lang] = getHtml()
+        })
+
+        context.i18n.updateLang(currentLang)
+        sendMessageToUI(EventType.JSONResultReady, json)
+        break
+      }
+      default:
+        console.error(`Unhandle event: ${type}`)
     }
   };
 

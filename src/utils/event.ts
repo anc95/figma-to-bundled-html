@@ -6,7 +6,10 @@ export enum EventType {
   SetPluginData,
   InitialData,
   TextKeys,
-  ChangeLang
+  ChangeLang,
+  CustomScript,
+  JSONResult,
+  JSONResultReady
 }
 
 export const sendMessageToUI = <T>(type: EventType, data?: T) => {
@@ -33,6 +36,7 @@ export const getInitialData = (rootNode: SceneNode): PluginData => {
   return {
     previewConfig: get('previewConfig', null),
     i18nResource: get('i18nResource', {}),
-    langs: get('langs', [])
+    langs: get('langs', []),
+    customScript: get('customScript', '')
   }
 }
