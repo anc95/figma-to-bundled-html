@@ -1,4 +1,5 @@
 import { calcCssStyleFromStyleId, createStyleStringFromJSON } from '@/utils/style'
+import { normalize } from './normalize'
 
 export const createClassStyleStore = () => {
   const store = new Map<string, Record<string, string>>()
@@ -39,7 +40,7 @@ export const createClassStyleStore = () => {
       styleString += `\n.${className}{\n${createStyleStringFromJSON(style)}\n}`
     }
 
-    return `<style>\n${styleString}\n</style>`
+    return `<style>\n${normalize}\n${styleString}\n</style>`
   }
 
   return {

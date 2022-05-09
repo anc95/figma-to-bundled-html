@@ -14,7 +14,7 @@ export const createContext = ({
   rootNode
 }: Pick<Context, 'rootNode'>) => {
   const classStyleStore = createClassStyleStore()
-  const textKeys = new Set<string>()
+  const textKeys = new Set<string>(['document.title'])
   const i18n = createI18n(rootNode)
   const customScript = createCustomScriptStore(rootNode)
 

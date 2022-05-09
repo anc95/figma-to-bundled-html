@@ -245,7 +245,7 @@ export const calcFrameCssStyle = async (textNode: FrameNode) => {
   }
 
   if (itemSpacing) {
-    // TODO: need to set style for the children
+    style['gap'] = `${itemSpacing}px`
   }
 
   if (typeof cornerRadius === 'number') {

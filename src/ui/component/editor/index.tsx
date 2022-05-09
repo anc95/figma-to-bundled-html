@@ -56,7 +56,7 @@ export const Editor = (props: EditorProps) => {
             <CodeMirror onChange={(code) => handleCodeChange(file.name, code)} value={file.options.value as string} options={file.options} />
             {
               changedFiles.includes(file.name) ?
-              <Button onClick={() => handleSave(file.name)} type='text' className="right-4 absolute top-0">Save</Button>
+              <Button onClick={() => handleSave(file.name)} type='text' style={{left: '420px'}} className="absolute top-0">Save</Button>
               : null
             }
           </TabPane>

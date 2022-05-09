@@ -92,9 +92,9 @@ export class TextProcessor {
 					await task(li.children, index + 1)
 				}
 			} else {
-				list.push(textSegment)
+				segments.push(textSegment)
 				appendBr()
-				await task(list, index + 1)
+				await task(segments, index + 1)
 			}
 		}
 

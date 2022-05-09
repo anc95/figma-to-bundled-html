@@ -20,8 +20,6 @@ export const ResourceManagement = (props: ResourceManagementProps) => {
     onChange
   } = props
 
-  console.log(langs)
-
   const [filter, setFilter] = useState('');
   const filteredKeys = useMemo(() => {
     return textKeys.filter(key => key.includes(filter))

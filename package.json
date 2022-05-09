@@ -37,6 +37,7 @@
     "@types/react-codemirror": "^1.0.7",
     "antd": "^4.20.2",
     "codemirror": "^5.65.3",
+    "normalize.css": "^8.0.1",
     "react": "^18.1.0",
     "react-codemirror": "^1.0.0",
     "react-dom": "^18.1.0",

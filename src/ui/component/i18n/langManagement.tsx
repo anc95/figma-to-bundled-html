@@ -39,7 +39,7 @@ export const LangManagement = (props: LangManagementProps) => {
 
   return <div>
     <div className='mb-4'>
-      {langs.map(lang => <Tag closable onClick={() => handleDeleteLang(lang)}>{lang}</Tag>)}
+      {langs.map(lang => <Tag closable onClose={() => handleDeleteLang(lang)}>{lang}</Tag>)}
     </div>
     <Input value={inputValue} placeholder='new lang' onChange={e => setInputValue(e.target.value)} suffix={<Button onClick={handleAddNewLang}>Add</Button>}/>
   </div>
