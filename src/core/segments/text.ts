@@ -1,8 +1,8 @@
-import { BaseSegment } from '@/types/segment'
 import { solidPaintToCssColor, calcTextCssStyle } from '@/utils/style'
 import { useContext } from '@/core/context'
+import { BaseSegment } from './base';
 
-export class TextSegment implements BaseSegment {
+export class TextSegment extends BaseSegment {
   public children;
   public className: string;
   public tag: string;
@@ -10,6 +10,8 @@ export class TextSegment implements BaseSegment {
   public text: string
 
   constructor() {
+    super()
+
     this.tag = 'div',
     this.style = {
       'display': 'inline-block'
@@ -18,6 +20,8 @@ export class TextSegment implements BaseSegment {
     this.text = ''
     this.children = []
   }
+  attributes?: Record<string, string>;
+  renderattributes: () => string;
 
   async fillFigma(figmaSegment: Partial<StyledTextSegment>) {
     const {

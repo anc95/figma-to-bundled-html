@@ -1,4 +1,5 @@
 import { SVGSegment } from "../segments"
+import { ImageSegment } from "../segments/Image"
 
 export class ImageProcessor {
   ImageNode: SceneNode
@@ -8,10 +9,19 @@ export class ImageProcessor {
   }
 
   async run() {
-    const container = new SVGSegment()
-    const svg = await this.ImageNode.exportAsync({format: 'SVG'})
+    const width = this.ImageNode.width
+    const useSVG = width < 50
 
-    container.content = String.fromCharCode(...svg)
+    const container = useSVG ? new SVGSegment() : new ImageSegment()
+
+    if (container.tag === 'img') {
+      const image = await this.ImageNode.exportAsync({format: 'PNG'})
+      container.attributes['src'] = `data:image/png;base64,${figma.base64Encode(image)}`
+    }
+    else {
+      const svg = await this.ImageNode.exportAsync({format: 'SVG'})
+      container.content = String.fromCharCode(...svg)
+    }
 
     return container
   }

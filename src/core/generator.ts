@@ -1,7 +1,7 @@
-import { BaseSegment } from '@/types/segment'
 import { createStyleStringFromJSON } from '@/utils/style'
 import { useContext } from './context'
 import { FrameProcessor, TextProcessor, ImageProcessor } from './processor'
+import { BaseSegment } from './segments'
 
 const hasTextChildren = (node: SceneNode) => {
   if (node.type === 'TEXT') {
@@ -12,12 +12,8 @@ const hasTextChildren = (node: SceneNode) => {
 }
 
 const generateSegmentTree = async (selection: readonly SceneNode[]) => {
-  const tree: BaseSegment = {
-    tag: 'body',
-    className: '',
-    style: {},
-    children: []
-  }
+  const tree = new BaseSegment()
+  tree.tag = 'body'
 
   const traverse = async (containers: any[], figmaChildren: SceneNode[]) => {
     for (const figmaChild of figmaChildren) {
@@ -26,6 +22,7 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
       if (!hasTextChildren(figmaChild)) {
         const rectangleProcessor = new ImageProcessor(figmaChild)
         child = await rectangleProcessor.run()
+        console.log(child)
         containers.push(child)
         continue
       }
@@ -79,7 +76,7 @@ export const generateHTML = async () => {
       return (node as any).content
     }
 
-    const str = `<${node.tag} ${node.className ? `class=\"${node.className}\"` : ''} style="${createStyleStringFromJSON(node.style)}">
+    const str = `<${node.tag} ${node?.renderattributes?.() || ''} ${node.className ? `class=\"${node.className}\"` : ''} style="${createStyleStringFromJSON(node.style)}">
       ${node.children ? node.children.map(child => traverse(child)).join('') : ''}
       ${getText((node as any).text)}
     </${node.tag}>

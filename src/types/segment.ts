@@ -3,4 +3,7 @@ export interface BaseSegment {
   tag: string,
   style?: Record<string, string>,
   children?: BaseSegment[]
+  attributes?: Record<string, string>
+
+  renderattributes: () => string
 }

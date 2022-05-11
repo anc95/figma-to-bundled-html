@@ -1,7 +1,7 @@
-import { BaseSegment } from '@/types/segment'
-import { calcTextNodeCssStyle } from '@/utils/style'
 import { TextSegment, BrSegment } from '@/core/segments'
+import { calcTextNodeCssStyle } from '@/utils/style'
 import { useContext } from '../context'
+import { BaseSegment } from '../segments/base'
 
 export class TextProcessor {
 	private textNode: TextNode
@@ -103,13 +103,10 @@ export class TextProcessor {
 	}
 
 	private getContainer = async () => {
-		const container: BaseSegment = {
-			tag: 'div',
-			// TODO: support container className
-			className: '',
-			style: await calcTextNodeCssStyle(this.textNode),
-			children: await this.getSegments()
-		}
+		const container = new BaseSegment()
+		container.tag = 'div'
+		container.style = await calcTextNodeCssStyle(this.textNode)
+		container.children = await this.getSegments()
 
 		return container
 	}
