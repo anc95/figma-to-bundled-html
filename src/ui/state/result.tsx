@@ -11,5 +11,6 @@ export const jsonResultAtom = atom<string>({
 })
 
 export const customScriptAtom = atom<string>({
-  key: 'custom-script'
+  key: 'custom-script',
+  default: '',
 })

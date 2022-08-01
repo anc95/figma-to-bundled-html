@@ -30,7 +30,7 @@ export class TextSegment extends BaseSegment {
       textStyleId
     } = figmaSegment
 
-    this.text = characters.replace(/\x20+$/g, '&nbsp;')
+    this.text = characters.replace(/[\x20]+$/g, '&nbsp;').replace("\n", '<br/>')
 
     // TODO: condiser there fills are more than one
     if (fills.length) {

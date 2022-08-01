@@ -11,7 +11,7 @@ export const createClassStyleStore = () => {
     if (!name) {
       name = id;
     } else {
-      name = name.replace(/\s/g, '');
+      name = name.replace(/[\s\/]/g, '');
     }
 
     if (!store.get(id)) {

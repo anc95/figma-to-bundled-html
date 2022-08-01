@@ -11,6 +11,30 @@ const hasTextChildren = (node: SceneNode) => {
   return ((node as any).children || []).some(child => hasTextChildren(child))
 }
 
+const sort = (children: SceneNode[]) => {
+  const result = []
+  
+  for (const node of children) {
+    if (!result.length) {
+      result.push(node)
+    }
+
+    for (let i = 0; i <= result.length; i++) {
+      if (i === result.length) {
+        result.push(node)
+        break;
+      }
+
+      if (node.y < result[i].y) {
+        result.splice(i, 0, node)
+        break
+      }
+    }
+  }
+console.log(result,'result')
+  return result
+}
+
 const generateSegmentTree = async (selection: readonly SceneNode[]) => {
   const tree = new BaseSegment()
   tree.tag = 'body'
@@ -22,7 +46,6 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
       if (!hasTextChildren(figmaChild)) {
         const rectangleProcessor = new ImageProcessor(figmaChild)
         child = await rectangleProcessor.run()
-        console.log(child)
         containers.push(child)
         continue
       }
@@ -34,7 +57,8 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
           
           break
         case 'FRAME':
-          const frameProcessor = new FrameProcessor(figmaChild)
+        case 'GROUP':
+          const frameProcessor = new FrameProcessor(figmaChild as any)
           child = await frameProcessor.run()
 
           break
@@ -45,7 +69,7 @@ const generateSegmentTree = async (selection: readonly SceneNode[]) => {
 
       if (child) {
         containers.push(child)
-        await traverse(child.children, (figmaChild as any).children || [])
+        await traverse(child.children, sort((figmaChild as any).children || []))
       }
     }
   }

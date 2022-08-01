@@ -15,7 +15,10 @@ export class ImageProcessor {
     const container = useSVG ? new SVGSegment() : new ImageSegment()
 
     if (container.tag === 'img') {
-      const image = await this.ImageNode.exportAsync({format: 'PNG'})
+      const image = await this.ImageNode.exportAsync({format: 'PNG', constraint: {
+        type: 'WIDTH',
+        value: this.ImageNode.width * 3
+      }})
       container.attributes['src'] = `data:image/png;base64,${figma.base64Encode(image)}`
     }
     else {

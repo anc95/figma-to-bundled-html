@@ -31,7 +31,7 @@ if (figma.editorType === 'figma') {
       case (EventType.UILoaded): {
         getHtml = await generateHTML()
         const inistialData = getInitialData(rootNode)
-        context.i18n.updateLang(inistialData.previewConfig.lang)
+        context.i18n.updateLang(inistialData.previewConfig?.lang)
         sendMessageToUI(EventType.HtmlReady, getHtml())
         sendMessageToUI(EventType.InitialData, inistialData)
         sendMessageToUI(EventType.TextKeys, [...context.textKeys])

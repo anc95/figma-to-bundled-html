@@ -74,7 +74,7 @@ const App = () => {
     setConfig(values)
     sendMessageToCode(EventType.SetPluginData, { key: 'previewConfig', value: values })
 
-    if (_changedValue.lang) {
+    if (_changedValue?.lang) {
       sendMessageToCode(EventType.ChangeLang, _changedValue.lang)
     }
   }, [])

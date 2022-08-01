@@ -12,7 +12,7 @@ export class TextProcessor {
 
 	private getSegments = async () => {
 		const originSegments = this.textNode.getStyledTextSegments(['fillStyleId', 'fills', 'fontName', 'fontSize', 'hyperlink', 'letterSpacing', 'lineHeight', 'textCase', 'textDecoration', 'textStyleId', 'listOptions'])
-
+		
 		const segments: (TextSegment | BrSegment)[] = []
 		let inOl = false
 		let inLi = false
@@ -92,6 +92,7 @@ export class TextProcessor {
 					await task(li.children, index + 1)
 				}
 			} else {
+				debugger
 				segments.push(textSegment)
 				appendBr()
 				await task(segments, index + 1)
